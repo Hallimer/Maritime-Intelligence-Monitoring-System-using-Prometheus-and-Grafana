@@ -32,6 +32,12 @@ docker-compose -f .\docker\docker-compose.yml up -d
 4. **Launch Grafana**
    Open `http://localhost:3000`, connect Prometheus as a data source, and explore the demo dashboards.
 
+
+## Using the premade Grafana Dashboards
+1. Run the Docker Setup
+2. Go into Grafana `http://localhost:3000` -> Dashboards -> Import
+3. Upload the `.json` files in `grafana-dashboards/`
+   
 ## Notes
 
 * **Demo Only**: All data is simulated for demonstration purposes.
