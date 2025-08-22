@@ -343,17 +343,22 @@ class EnhancedMaritimeExporter:
             # Simulate occupancy changes
             port['current_occupancy'] += random.uniform(-3, 3)
             port['current_occupancy'] = max(20, min(100, port['current_occupancy']))
-            
+
             # Calculate actual berths occupied
             berths_occupied = int((port['current_occupancy'] / 100) * port['berth_capacity'])
-            
-            # Update queue length
+
+            # Update queue length with realistic cap
             port['queue_length'] += random.randint(-2, 3)
-            port['queue_length'] = max(0, port['queue_length'])
-            
-            # Congestion index (based on occupancy and queue)
-            congestion_index = min(100, (port['current_occupancy'] * 0.7) + (port['queue_length'] * 2))
-            
+            port['queue_length'] = max(0, min(port['queue_length'], port['berth_capacity']))
+
+            # Congestion index: weighted sum of occupancy (0-70) + queue (0-30)
+            # Ensures congestion_index stays between ~10 and 100 realistically
+            queue_weight = 30  # Max contribution of queue length to congestion
+            occupancy_weight = 70  # Max contribution of occupancy to congestion
+            congestion_index = (port['current_occupancy'] / 100) * occupancy_weight + \
+                            (port['queue_length'] / port['berth_capacity']) * queue_weight
+            congestion_index = min(100, congestion_index)
+
             # Port metrics
             self.port_berth_occupancy_percent.labels(
                 port['code'], port['name'], port['country'], 'All_Terminals'
@@ -518,7 +523,7 @@ class EnhancedMaritimeExporter:
             vessel['speed'] = 0
             if random.random() < 0.05:  # 5% chance to depart
                 vessel['status'] = 'underway'
-                vessel['eta'] = datetime.now() + timedelta(hours=random.randint(12, 168))
+                vessel['eta'] = datetime.now() + timedelta(hours=random.randint(-72, 168))
                 vessel['speed'] = random.uniform(8, vessel['max_speed'])
         
         # Update fuel consumption
