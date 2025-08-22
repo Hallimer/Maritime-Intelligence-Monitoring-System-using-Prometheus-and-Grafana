@@ -1,0 +1,143 @@
+# Maritime Intelligence Alert Rules
+groups:
+  - name: maritime_vessel_alerts
+    rules:
+      # Vessel speed anomalies
+      - alert: VesselSpeedAnomaly
+        expr: vessel_speed_knots > 30 OR vessel_speed_knots < 0.5
+        for: 5m
+        labels:
+          severity: warning
+          category: operational
+        annotations:
+          summary: "Vessel {{ $labels.vessel_name }} ({{ $labels.vessel_id }}) has unusual speed"
+          description: "Vessel {{ $labels.vessel_name }} is traveling at {{ $value }} knots, which is outside normal operating range."
+
+      # Low fuel alerts
+      - alert: VesselLowFuel
+        expr: vessel_fuel_level_percent < 15
+        for: 2m
+        labels:
+          severity: warning
+          category: operational
+        annotations:
+          summary: "Vessel {{ $labels.vessel_name }} has low fuel"
+          description: "Vessel {{ $labels.vessel_name }} fuel level is at {{ $value }}%."
+
+      # Critical fuel alerts
+      - alert: VesselCriticalFuel
+        expr: vessel_fuel_level_percent < 5
+        for: 1m
+        labels:
+          severity: critical
+          category: operational
+        annotations:
+          summary: "Vessel {{ $labels.vessel_name }} has critically low fuel"
+          description: "Vessel {{ $labels.vessel_name }} fuel level is critically low at {{ $value }}%."
+
+  - name: maritime_port_alerts
+    rules:
+      # Port congestion alerts
+      - alert: PortCongestion
+        expr: port_berth_occupancy_percent > 90
+        for: 10m
+        labels:
+          severity: warning
+          category: logistics
+        annotations:
+          summary: "Port {{ $labels.port_name }} is experiencing congestion"
+          description: "Port {{ $labels.port_name }} ({{ $labels.port_code }}) berth occupancy is at {{ $value }}%."
+
+      # Long queue alerts
+      - alert: PortLongQueue
+        expr: port_queue_length > 10
+        for: 15m
+        labels:
+          severity: warning
+          category: logistics
+        annotations:
+          summary: "Long queue at port {{ $labels.port_name }}"
+          description: "Port {{ $labels.port_name }} has {{ $value }} vessels waiting in queue."
+
+      # Extended turnaround time
+      - alert: PortSlowTurnaround
+        expr: port_avg_turnaround_hours > 48
+        for: 30m
+        labels:
+          severity: warning
+          category: efficiency
+        annotations:
+          summary: "Slow turnaround at port {{ $labels.port_name }}"
+          description: "Port {{ $labels.port_name }} average turnaround time is {{ $value }} hours."
+
+  - name: maritime_compliance_alerts
+    rules:
+      # Compliance violations
+      - alert: ComplianceViolation
+        expr: compliance_status == 0
+        for: 5m
+        labels:
+          severity: critical
+          category: compliance
+        annotations:
+          summary: "Compliance violation detected for vessel {{ $labels.vessel_id }}"
+          description: "Vessel {{ $labels.vessel_id }} is non-compliant with {{ $labels.regulation_type }} regulations."
+
+      # High risk vessels
+      - alert: HighRiskVessel
+        expr: vessel_risk_score > 80
+        for: 10m
+        labels:
+          severity: warning
+          category: risk
+        annotations:
+          summary: "High risk vessel detected"
+          description: "Vessel {{ $labels.vessel_id }} has a risk score of {{ $value }}."
+
+  - name: maritime_operational_alerts
+    rules:
+      # Fleet utilization alerts
+      - alert: LowFleetUtilization
+        expr: fleet_utilization_percent < 70
+        for: 30m
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "Low fleet utilization for {{ $labels.operator }}"
+          description: "{{ $labels.operator }} {{ $labels.vessel_type }} fleet utilization is only {{ $value }}%."
+
+      # Shipping lane congestion
+      - alert: ShippingLaneCongestion
+        expr: shipping_lane_traffic_count > 40
+        for: 20m
+        labels:
+          severity: warning
+          category: traffic
+        annotations:
+          summary: "Heavy traffic in {{ $labels.lane_name }}"
+          description: "Shipping lane {{ $labels.lane_name }} ({{ $labels.direction }}) has {{ $value }} vessels."
+
+  - name: maritime_system_alerts
+    rules:
+      # Exporter down
+      - alert: MaritimeExporterDown
+        expr: up{job="maritime-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: system
+        annotations:
+          summary: "Maritime exporter is down"
+          description: "Maritime data exporter has been down for more than 2 minutes."
+
+      # Missing vessel data
+      - alert: MissingVesselData
+        expr: absent_over_time(vessel_latitude[10m])
+        for: 5m
+        labels:
+          severity: warning
+          category: data_quality
+        annotations:
+          summary: "Missing vessel position data"
+          description: "No vessel position data received for the past 10 minutes."
