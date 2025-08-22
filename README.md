@@ -1,7 +1,3 @@
-Got it! Here's a revised README that makes it clear this is a **demo project** for showcasing BI skills, with **simulated data**:
-
----
-
 # Maritime Intelligence Monitoring System (Demo Project)
 
 This is a **demonstration project** showcasing Business Intelligence (BI) skills using **Prometheus** and **Grafana**. It simulates maritime data to create dashboards, alerts, and visualizations. **This project is for demonstration purposes only** and is **not intended for real-world maritime monitoring**.
