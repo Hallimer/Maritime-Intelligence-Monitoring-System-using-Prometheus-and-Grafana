@@ -4,7 +4,7 @@ This is a **demonstration project** showcasing Business Intelligence (BI) skills
 
 ## Features
 
-* **Simulated Maritime Data**: Generates realistic maritime metrics for demonstration.
+* **Simulated Maritime Data**: Generates maritime metrics for demonstration.
 * **Prometheus Integration**: Collects and stores time-series data.
 * **Grafana Dashboards**: Visualize data trends, patterns, and anomalies.
 * **Alerting Demo**: Showcases how alerts can be configured based on metrics.
